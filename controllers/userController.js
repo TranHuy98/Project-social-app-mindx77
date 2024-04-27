@@ -1,6 +1,7 @@
 import UserModel from "../models/users.js";
-import bcrypt from 'bcrypt';
+// import bcrypt from 'bcrypt';
 import { generateToken } from "../middlewares/token.js";
+import bcrypt from 'bcryptjs';
 
 const userController = {
     //sign up
