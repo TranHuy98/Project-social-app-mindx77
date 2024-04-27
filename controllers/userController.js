@@ -1,5 +1,4 @@
 import UserModel from "../models/users.js";
-// import bcrypt from 'bcrypt';
 import { generateToken } from "../middlewares/token.js";
 import bcrypt from 'bcryptjs';
 
@@ -20,12 +19,12 @@ const userController = {
             const salt = bcrypt.genSaltSync(saltRounds);
             const hash = bcrypt.hashSync(userPassword, salt);
 
+
             const newUser = await UserModel.create({
                 userEmail,
                 userName,
                 userPassword: hash,
                 salt: salt,
-
             });
 
             await newUser.save();
@@ -52,7 +51,7 @@ const userController = {
                 console.log('email not found');
                 throw new Error('email not existed');
             }
-                
+
             const passwordMatched = bcrypt.compareSync(password, currentUser.userPassword);
 
             if (!passwordMatched) {
@@ -113,11 +112,11 @@ const userController = {
             const { userId } = req.params;
 
             const currentUser = await UserModel.findById(userId);
-            if(!currentUser) throw new Error('user ko ton tai');
+            if (!currentUser) throw new Error('user ko ton tai');
 
             const { name, email, password } = req.body;
-            // const user = req.user;
-            const updatedUser =  await UserModel.findByIdAndUpdate({
+            const user = req.user;
+            const updatedUser = await UserModel.findByIdAndUpdate({
                 _id: userId,
             }, {
                 name,
@@ -140,7 +139,7 @@ const userController = {
         }
     },
 
-    
+
 };
 
 export default userController;
