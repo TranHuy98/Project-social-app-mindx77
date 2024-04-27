@@ -33,6 +33,6 @@ app.get('', (req, res) => {
 });
 
 
-app.listen(port || 8080, () => {
+app.listen(port || 10000, '0.0.0.0', () => {
     console.log('Server is running on port ' + port);
 });
