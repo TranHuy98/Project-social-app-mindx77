@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 
 const generateToken = (document, type) => {
     const getSecretKey = (type === 'AT' ? process.env.AT_SECRETKEY : process.env.RT_SECRETKEY);
-    const getExp = (type === 'AT' ? 300 : 3600 * 24)
+    const getExp = (type === 'AT' ? 3000 : 3600 * 24)
     const token = jwt.sign(document, getSecretKey, {
         expiresIn: getExp
     });
