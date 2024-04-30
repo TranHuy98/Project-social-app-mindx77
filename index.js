@@ -15,20 +15,7 @@ mongoose.connect(database_url);
 
 const app = express();
 
-// app.use(cors());
-
-const corsOptions ={
-    origin:'https://social-app-fe-mindx.onrender.com/', 
-    credentials:true,
-    optionSuccessStatus:200
-}
-app.use(cors(corsOptions));
-app.use(express.json());
-
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    next();
-  });
+app.use(cors());
 
 app.use('/posts', postRouter);
 app.use('/users', userRouter);
