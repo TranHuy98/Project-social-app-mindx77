@@ -16,6 +16,11 @@ mongoose.connect(database_url);
 const app = express();
 
 app.use(cors());
+app.use(cors({
+    origin: 'https://social-app-fe-mindx.onrender.com/', 
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true
+  }));
 
 app.use('/posts', postRouter);
 app.use('/users', userRouter);
@@ -26,6 +31,9 @@ app.get('', (req, res) => {
     res.send('Hello world!');
 });
 
-app.listen(port || 10000, '0.0.0.0', () => {
+const server = app.listen(port || 10000, '0.0.0.0', () => {
     console.log('Server is running on port ' + port);
 });
+
+server.keepAliveTimeout = 120000; // 120 seconds
+server.headersTimeout = 120000; // 120 seconds
