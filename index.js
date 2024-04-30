@@ -11,6 +11,7 @@ dotenv.config();
 const database_url = process.env.DATABASE_URL;
 const port = process.env.PORT;
 
+console.log(port);
 mongoose.connect(database_url);
 
 const app = express();
@@ -31,9 +32,10 @@ app.get('', (req, res) => {
     res.send('Hello world!');
 });
 
-const server = app.listen(port || 10000, '0.0.0.0', () => {
+const server = app.listen(port || 8080, '0.0.0.0', () => {
     console.log('Server is running on port ' + port);
 });
 
-server.keepAliveTimeout = 120000; // 120 seconds
-server.headersTimeout = 120000; // 120 seconds
+
+server.keepAliveTimeout = 120000; 
+server.headersTimeout = 120000;
