@@ -1,4 +1,5 @@
 import PostModel from "../models/posts.js";
+import UserModel from "../models/users.js";
 
 const postController = {
 
@@ -6,8 +7,6 @@ const postController = {
 
 
     createPost: async (req, res) => {
-
-        // console.log('ok');
 
         try {
             const { postTitle, postContent, postImage } = req.body;
@@ -27,7 +26,7 @@ const postController = {
 
             res.status(201).send({
                 data: newPost,
-                messge: 'success',
+                messge: 'creat post success',
             })
         } catch (error) {
             console.log(error);
@@ -63,48 +62,85 @@ const postController = {
         }
     },
 
-    ///get a post
+    //find post by title
+
+    findPostsByTitle: async (req, res) => {
+        try {
+            const { title } = req.query;
+            console.log(title);
+            const foundPosts = await PostModel.find();
+
+            console.log(foundPosts);
+
+            res.status(201).json({
+                data: foundPosts,
+                message: 'Tim kiem post thanh cong',
+            });
+
+        } catch (error) {
+            res.status(200).send({
+                data: post,
+                message: 'get post by name success',
+
+            })
+        }
+    },
+
+    //get a post by id
 
     getPostById: async (req, res) => {
-        const postId = req.params;
+        const postId = req.params.postId;
 
-        const post = await PostModel.findById(postId);
+        try {
+            const post = await PostModel.findById(postId);
 
-        res.status(200).send({
-            data: post,
-            message: 'success',
+            if (!post) {
+                return res.status(404).json({ message: 'post not found' });
+            }
 
-        })
+            res.status(201).send({
+                data: post,
+                message: "get a post success"
+            });
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Error when get post' });
+        }
     },
 
     //update post
     updatePost: async (req, res) => {
-
         try {
             const { postTitle, postContent } = req.body;
-            const { id } = req.params;
+            const { postId } = req.params;
 
-            const currentUser = req.user;
+            console.log('on update');
 
             if (!postTitle) throw new Error("Chua co tieu de");
-            if (!postContent) throw new Error("Chua co noi dung");
+            if (!postContent) throw new Error("Chua co noi dung moi");
 
-            const updatedPost = await PostModel.findOneAndUpdate({
-                _id: id,
-                author: currentUser,
-            }, {
-                postTitle,
-                postContent,
-            });
+            const updatedPost = await PostModel.findOneAndUpdate(
+                {
+                    _id: postId,
+                },
+                {
+                    postTitle,
+                    postContent,
+                },
+                { new: true }
+            );
 
-            res.status(201).send({
+            if (!updatedPost) {
+                return res.status(404).json({ error: "Không tìm thấy bài viết" });
+            }
+
+            res.status(201).json({
                 data: updatedPost,
-                messge: 'success',
-            })
+                message: "Cập nhật bài viết thành công",
+            });
         } catch (error) {
-            res.status(404).send({
-                message: 'fail',
-            })
+            res.status(500).json({ error: error.message });
         }
     },
 
@@ -112,7 +148,7 @@ const postController = {
     deletePost: async (req, res) => {
         try {
             const postId = req.params.postId;
-            if(!postId) {
+            if (!postId) {
                 return res.status(404).send({ message: 'bai viet ko ton tai' });
             }
 

@@ -4,9 +4,12 @@ import authentication from "../middlewares/authentication.js";
 
 const userRouter = Router();
 
-userRouter.post('/signup', userController.signUp);
-userRouter.post('/login', userController.logIn);
+
+userRouter.post('/signup', authentication.validateSignUp ,userController.signUp);
+userRouter.post('/login', authentication.validateLogIn,userController.logIn);
+userRouter.post('/logout', authentication.verifyAccessToken ,userController.logOut);
 userRouter.get('/:userId', authentication.verifyAccessToken, userController.getUserInfo);
 userRouter.put('/:userId', authentication.verifyAccessToken, userController.updateUserInfo);
+
 
 export default userRouter;

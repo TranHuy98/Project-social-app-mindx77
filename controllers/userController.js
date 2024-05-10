@@ -1,5 +1,5 @@
 import UserModel from "../models/users.js";
-import { generateToken } from "../middlewares/token.js";
+import { generateToken, verifyToken } from "../middlewares/token.js";
 import bcrypt from 'bcryptjs';
 
 const userController = {
@@ -21,20 +21,22 @@ const userController = {
 
 
             const newUser = await UserModel.create({
-                userEmail,
-                userName,
+                userName: userName,
+                userEmail: userEmail,
                 userPassword: hash,
                 salt: salt,
+
             });
 
             await newUser.save();
             res.status(200).send({
                 data: newUser,
-                message: 'success'
+                message: 'dang ki thanh cong'
             });
 
         } catch (error) {
-            res.status(500).json({ message: 'error' })
+            console.log(error);
+            res.status(500).json({ message: 'dang ki loi' })
         }
     },
 
@@ -42,45 +44,81 @@ const userController = {
 
     logIn: async (req, res) => {
         try {
-
-            console.log('in login');
-            const { email, password } = req.body;
-            const currentUser = await UserModel.findOne({ userEmail: email });
+            const { userEmail, userPassword } = req.body;
+            const currentUser = await UserModel.findOne({ userEmail: userEmail });
 
             if (!currentUser) {
                 console.log('email not found');
                 throw new Error('email not existed');
             }
 
-            const passwordMatched = bcrypt.compareSync(password, currentUser.userPassword);
+            const passwordMatched = bcrypt.compareSync(userPassword, currentUser.userPassword);
 
             if (!passwordMatched) {
                 console.log('password wrong');
                 throw new Error('password wrong');
             }
 
-            //generate token
-            // const getUser = currentUser.toObject();
-            const accessToken = generateToken({
-                userId: currentUser._id,
-                email: currentUser.userEmail,
-                tokenType: 'AT'
-            }, 'AT');
+            // tao access token
+            const accessToken = generateToken(
+                {
+                    userId: currentUser._id,
+                    email: currentUser.userEmail,
+                    tokenType: 'AT'
+                },
+                'AT'
+            );
 
-            const refreshToken = generateToken({
-                userId: currentUser._id,
-                userEmail: currentUser.userEmail,
-                tokenType: 'RT'
-            }, 'RT');
+            // tao refresh token
+            const refreshToken = generateToken(
+                {
+                    userId: currentUser._id,
+                    userEmail: currentUser.userEmail,
+                    tokenType: 'RT'
+                },
+                'RT'
+            );
+
+            req.user = currentUser;
+            await currentUser.save();
+            console.log(currentUser);
 
             //response
             res.status(200).send({
-                message: 'login success',
-                userEmail: currentUser.userEmail,
-                user: currentUser.userName,
+                message: 'Đăng nhập thành công',
+                data: {
+                    accessToken,
+                    refreshToken,
+                    userEmail: currentUser.userEmail,
+                    userName: currentUser.userName
+                }
             });
         } catch (error) {
-            res.status(500).json({ message: 'error' });
+            console.log(error);
+            res.status(500).json({ message: 'dang nhap that bai' });
+        }
+    },
+
+    //dang xuat
+
+    logOut: async (req, res) => {
+        try {
+            const currentUser = req.user;
+            console.log(currentUser);
+
+            if (!currentUser) {
+                throw new Error('User not existed');
+            }
+
+            res.status(401).send({
+                message: "dang xuat thanh cong",
+            })
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({
+                message: 'logout fail',
+            })
         }
     },
 

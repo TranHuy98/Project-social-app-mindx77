@@ -12,6 +12,10 @@ const commentSchema = new mongoose.Schema({
     content: {
         type: String,
 
+    },
+    createAt: {
+        type: Date,
+        default: Date.now,
     }
 });
 

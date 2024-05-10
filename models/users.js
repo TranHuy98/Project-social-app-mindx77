@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     },
     salt: {
         type: String,
-    }
+    },
 });
 
 const UserModel = mongoose.model('users', userSchema);

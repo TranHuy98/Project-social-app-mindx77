@@ -16,25 +16,17 @@ mongoose.connect(database_url);
 
 const app = express();
 
+app.use(express.json());
 app.use(cors());
-app.use(cors({
-    origin: 'https://social-app-fe-mindx.onrender.com/', 
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true
-  }));
 
-  app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', 'https://social-app-fe-mindx.onrender.com');
-    next();
-  });
-
+app.use('/posts/commentsOnPost', commentRouter);
 app.use('/posts', postRouter);
 app.use('/users', userRouter);
-app.use('/comments', commentRouter);
+
 
 
 app.get('', (req, res) => {
-    res.send('Hello world!');
+    res.send('Project Social');
 });
 
 const server = app.listen(port || 8080, '0.0.0.0', () => {
