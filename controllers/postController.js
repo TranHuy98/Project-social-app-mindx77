@@ -68,7 +68,7 @@ const postController = {
         try {
             const { title } = req.query;
             console.log(title);
-            const foundPosts = await PostModel.find();
+            const foundPosts = await PostModel.find({ postTitle: { $regex: `.*${title}.*`, $options: 'i' } });
 
             console.log(foundPosts);
 
